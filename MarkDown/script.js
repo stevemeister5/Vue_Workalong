@@ -18,4 +18,26 @@ new Vue({
         },
     },
 
+    // change watchers 
+    watch: {
+        // watching content data property
+        content: {
+            handler: 'saveNote',
+        },
+    },
+
+    // Called when the instance is ready 
+    created() {
+        // Set the content to the stored value
+        this.content = localStorage.getItem('content') || 'You can write in **markdown**'
+    },
+
+    // Methods 
+    methods: {
+        saveNote (val) {
+            console.group('saving note:', val)
+            localStorage.setItem('content', val)
+        },
+    },
+
 })
