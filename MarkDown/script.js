@@ -7,11 +7,10 @@ new Vue({
     data () {
         return {
 
-            content: localStorage.getItem('content') || 'You can write in **markdown**',
-            notes: [],
+            notes: JSON.parse(localStorage.getItem('notes')) || [],
             
             // ID of the selected note
-            selectedId: null,
+            selectedId: localStorage.getItem('selected-id') || null,
             
         }
     },
@@ -35,12 +34,25 @@ new Vue({
     },
 
     // change watchers 
-    // watch: {
+    watch: {
     //     // watching content data property
     //     content: {
     //         handler: 'saveNote',
     //     },
-    // },
+        notes: {
+            // Handler and method name
+            handler: 'saveNotes',
+
+            // Watch for nested changes
+            deep: true,
+        },
+
+        // Save the former selection
+        selectedId(val) {
+            localStorage.setItem('selected-id', val)
+        },
+
+    },
 
     // Called when the instance is ready 
     // created() {
@@ -73,6 +85,12 @@ new Vue({
 
         selectNote (note) {
             this.selectedId = note.id
+        },
+
+        saveNotes () {
+            // Stringify JSON before storing
+            localStorage.setItem('notes', JSON.stringify(this.notes))
+            console.log('Notes saved!', new Date() )
         },
     },
 
