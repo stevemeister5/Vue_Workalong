@@ -45,4 +45,10 @@ Vue.component('hand', {
     </div>`,
 
     props: ['cards'],
+
+    methods: {
+        handlePlay (card) {
+            this.$emit('card-play', card)
+        },
+    },
 })
