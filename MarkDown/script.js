@@ -1,7 +1,7 @@
 // Date filter 
 Vue.filter('date', time => moment(time)
     .format('DD/MM/YY, HH:mm') )
-    
+
 // New VueJS instance 
 new Vue({
     // CSS selector of the root DOM element 
@@ -41,6 +41,32 @@ new Vue({
                 .sort((a, b) => (a.favorite === b.favorite) ? 0 : a.favorite? -1 : 1)
         },
 
+        linesCount () {
+            if(this.selectedNote) {
+                // Count the number of new line characters
+                return this.selectedNote.content.split(/\r\n|\r|\n/).length
+            }
+        },
+
+        wordsCount () {
+            if (this.selectedNote) {
+                var s = this.selectedNote.content
+                // Turn new line characters into white-spaces
+                s = s.replace(/\n/g, ' ')
+                // Exclude start and end white-spaces
+                s = s.replace(/(^\s*)|(\s*$)/gi, '')
+                // Turn 2 or more duplicate white-spaces into 1
+                s = s.replace(/\s\s+/gi, ' ')
+                // Return the number of spaces
+                return s.split(' ').length
+            }
+        },
+
+        characterCount () {
+            if (this.selectedNote) {
+                return this.selectedNote.content.split('').length
+            }
+        },
     },
 
     // change watchers 
