@@ -8,13 +8,11 @@ new Vue({
         <top-bar :turn="turn" :current-player-index="currentPlayerIndex" 
             :players="players" />
             <transition name="hand">
-                <hand :cards="testHand" v-if="!activeOverlay" />
+                <hand :cards="testHand" v-if="!activeOverlay" @card-play="testPlayCard" />
             </transition>
     </div>`,
 
-    mounted () {
-        console.log(this.$data === state)
-    },
+    
 
     computed: {
         testCard () {
@@ -57,6 +55,12 @@ new Vue({
                 // definition object
                 def: cards[randomId],
             }
+        },
+
+        testPlayCard (card) {
+            // Remove the card from player hand
+            const index = this.testHand.indexOf(card)
+            this.testHand.splice(index, 1)
         }
     },
 

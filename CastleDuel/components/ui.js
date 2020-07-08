@@ -10,13 +10,10 @@ Vue.component('top-bar', {
 
     props: ['players', 'currentPlayerIndex', 'turn'],
 
-    created () {
-        console.log(this.players)
-    }
 })
 
 Vue.component('card', {
-    template: `<div class="card" :class=" 'type-' + def.type" @click="play">
+    template: `<div class="card" :class="'type-' + def.type" @click="play">
         <div class="title">{{ def.title }}</div>
         <img class="separator" src="svg/card-separator.svg" />
         <div class="description">
@@ -40,7 +37,9 @@ Vue.component('hand', {
     template: `<div class="hand">
         <div class="wrapper">
             <!-- Cards -->
-            <card v-for="card of cards" :def="card.def" />
+            <transition-group name="card" tag="div" class="cards">
+                <card v-for="card of cards" v-bind:key="card.uid" :def="card.def" @play="handlePlay(card)" />
+            </transition-group>
         </div>
     </div>`,
 
