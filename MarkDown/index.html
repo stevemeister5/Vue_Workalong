@@ -14,14 +14,35 @@
 
         <!-- Notebook app -->
         <div id="notebook">
-            <!-- Main pane -->
-            <section class="main">
-                <textarea v-model="content"></textarea>
-            </section>
 
-            <!-- Preview Pane -->
-            <aside class="preview" v-html="notePreview">
+            <!-- Sidebar -->
+            <aside class="side-bar">
+                <!-- Here will be the note list -->
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <!-- Add note button -->
+                    <button @click="addNote" :title="addButtonTitle"><i class="material-icons">add</i> Add note</button>
+                </div>
+                <div class="notes">
+                    <!-- Note list here -->
+                    <div class="note" v-for="note of notes"
+                        @click="selectNote(note)" :class="{selected: note === selectedNote}">
+                        {{note.title}}</div>
+                </div>
             </aside>
+
+
+            <template v-if="selectedNote">
+                <!-- Main pane -->
+                <section class="main">
+                    <textarea v-model="selectedNote.content"></textarea>
+                </section>
+
+                <!-- Preview Pane -->
+                <aside class="preview" v-html="notePreview">
+                </aside>
+            </template>
+            
         </div>
         <!-- Some JavaScript -->
         <script src="script.js"></script>
