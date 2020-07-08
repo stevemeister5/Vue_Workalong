@@ -2,8 +2,7 @@
     <head>
         <title>Notebook</title>
         <!-- Icons & Stylesheets -->
-        <link href="https://fonts.googleapis.com/icon?
-            family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
@@ -35,6 +34,22 @@
             <template v-if="selectedNote">
                 <!-- Main pane -->
                 <section class="main">
+
+                    <div class="toolbar">
+                        <!-- Our toolbar is here! -->
+                        <input v-model="selectedNote.title" placeholder="Note title" />
+
+                        <!-- Delete Button-->
+                        <button @click="removeNote" title="Remove Note">
+                            <i class="material-icons">delete</i>
+                        </button>
+
+                        <!-- Favorite button -->
+                        <button @click="favoriteNote" title="Favorite Note">
+                            <i class="material-icons">{{ selectedNote.favorite ? 'star' : 'star_border' }}</i>
+                        </button>
+                    </div>
+
                     <textarea v-model="selectedNote.content"></textarea>
                 </section>
 

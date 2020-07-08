@@ -92,6 +92,20 @@ new Vue({
             localStorage.setItem('notes', JSON.stringify(this.notes))
             console.log('Notes saved!', new Date() )
         },
+
+        removeNote () {
+            if (this.selectedNote && confirm('Delete the note?')) {
+                // Remove the note from the array
+                const index = this.notes.indexOf(this.selectedNote)
+                if (index !== -1) {
+                    this.notes.splice(index, 1)
+                }
+            }
+        },
+
+        favoriteNote() {
+            this.selectedNote.favorite ^= true
+        },
     },
 
 })
