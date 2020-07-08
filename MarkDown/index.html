@@ -24,9 +24,11 @@
                 </div>
                 <div class="notes">
                     <!-- Note list here -->
-                    <div class="note" v-for="note of notes"
+                    <div class="note" v-for="note of sortedNotes"
                         @click="selectNote(note)" :class="{selected: note === selectedNote}">
-                        {{note.title}}</div>
+                            <i class="icon material-icons" v-if="note.favorite">star</i>
+                            {{note.title}}
+                    </div>
                 </div>
             </aside>
 

@@ -31,6 +31,12 @@ new Vue({
             return this.notes.find(note => note.id === this.selectedId)
         },
 
+        sortedNotes () {
+            return this.notes.slice()
+                .sort((a, b) => a.created - b.created)
+                .sort((a, b) => (a.favorite === b.favorite) ? 0 : a.favorite? -1 : 1)
+        },
+
     },
 
     // change watchers 
