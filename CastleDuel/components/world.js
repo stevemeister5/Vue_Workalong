@@ -3,7 +3,7 @@ Vue.component('castle', {
         <img class="building" :src="'svg/castle' + index + '.svg'" />
         <img class="ground" :src="'svg/ground' + index + '.svg'" />
         <!-- Later, we will add a castle-banners component here -->
-        <castle-banners :player="player" /
+        <castle-banners :player="player" />
     </div>`,
     props: ['player', 'index'],
 })
@@ -14,11 +14,13 @@ Vue.component('castle-banners', {
             <!-- Food -->
             <img class="food-icon" src="svg/food-icon.svg" />
             <!-- Bubble here -->
+            <bubble type="food" :value="player.food" :ratio="foodRatio" />
             <!-- Banner bar here -->
 
             <!-- Health -->
             <img class="health-icon" src="svg/health-icon.svg" />
             <!-- Bubble here -->
+            <bubble type="health" :value="player.health" :ratio="healthRatio" />
             <!-- Banner bar here -->
         </div>
     `,
@@ -30,6 +32,23 @@ Vue.component('castle-banners', {
         },
         healthRatio () {
             return this.player.health / maxHealth
+        },
+    },
+})
+
+
+Vue.component('bubble', {
+    template: `<div class="stat-bubble" :class="type + '-bubble'"
+    :style="bubbleStyle">
+        <img :src="'svg/' + type + '-bubble.svg'" />
+        <div class="counter">{{ value }}</div>
+    </div>`,
+    props: ['type', 'value', 'ratio'],
+    computed: {
+        bubbleStyle () {
+            return {
+                top: (this.ratio * 220 + 40) * state.worldRatio + 'px',
+            }
         },
     },
 })
