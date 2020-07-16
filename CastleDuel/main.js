@@ -4,7 +4,7 @@ new Vue({
 
     data: state,
 
-    template: `<div id="#app">
+    template: `<div id="#app" :class="cssClass">
         <top-bar :turn="turn" :current-player-index="currentPlayerIndex" 
             :players="players" />
             <div class="world">
@@ -15,13 +15,14 @@ new Vue({
                 <div class="land" />
             </div>
             <transition name="hand">
-                <hand :cards="testHand" v-if="!activeOverlay" @card-play="testPlayCard" />
+                <hand :cards="currentHand" v-if="!activeOverlay" @card-play="handlePlayCard" 
+                    @card-leave-end="handleCardLeaveEnd" />
             </transition>
             <transition name="fade">
                 <div class="overlay-background" v-if="activeOverlay" />
             </transition>
             <transition name="zoom">
-                <overlay v-if="activeOverlay" :key="activeOverlay">
+                <overlay v-if="activeOverlay" :key="activeOverlay" @close="handleOverlayClose">
                     <component :is="'overlay-content-' + activeOverlay"
                         :player="currentPlayer" :opponent="currentOpponent"
                         :players="players" />
@@ -29,57 +30,30 @@ new Vue({
             </transition>
     </div>`,
 
+    mounted () {
+        beginGame()
+    },
+
     
+    methods: {
+        handlePlayCard (card) {
+            playCard(card)
+        },
+
+        handleCardLeaveEnd () {
+            applyCard()
+        },
+        handleOverlayClose () {
+            overlayCloseHandlers[this.activeOverlay]()
+        }
+    },
 
     computed: {
-        testCard () {
-            return cards.archers
-        },
-    },
-
-    created () {
-        this.testHand = this.createTestHand()
-    },
-
-    methods: {
-        handlePlay () {
-            console.log('You played a card!')
-        },
-
-        createTestHand () {
-            const cards = []
-            // Get the possible ids
-            const ids = Object.keys(cards)
-
-            // draw 5 cards
-            for ( let i = 0; i < 5; i++ ) {
-                cards.push(this.testDrawCard())
-            }
-
-            return cards
-        },
-
-        testDrawCard () {
-            // choose a random card based on the ids
-            const ids = Object.keys(cards)
-            const randomId = ids[Math.floor(Math.random() * ids.length)]
-            // Return a new card
+        cssClass () {
             return {
-                // unique id for the card
-                uid: cardUid++,
-                // Id of the definition
-                id: randomId,
-                // definition object
-                def: cards[randomId],
+                'can-play': this.canPlay,
             }
         },
-
-        testPlayCard (card) {
-            // Remove the card from player hand
-            const index = this.testHand.indexOf(card)
-            this.testHand.splice(index, 1)
-        },
-
     },
 
 })
@@ -95,4 +69,95 @@ requestAnimationFrame(animate);
 function animate(time) {
     requestAnimationFrame(animate);
     TWEEN.update(time);
+}
+
+function beginGame () {
+    state.players.forEach(drawInitialHand)
+}
+
+function playCard (card) {
+    if (state.canPlay) {
+        state.canPlay = false
+        currentPlayingCard = card
+
+        // Remove the card from player hand
+        const index = state.currentPlayer.hand.indexOf(card)
+        state.currentPlayer.hand.splice(index, 1)
+
+        // Add the card to the discard pile
+        addCardToPile(state.discardPile, card.id)
+    }
+}
+
+function applyCard () {
+    const card = currentPlayingCard
+
+    applyCardEffect(card)
+
+    // Wait a bit
+    setTimeout( () => {
+        // Check if the players are dead
+        state.players.forEach(checkPlayerLost)
+
+        if (isOnePlayerDead()) {
+            endGame()
+        } else {
+            nextTurn()
+        }
+    }, 700)
+}
+
+function nextTurn () {
+    state.turn ++
+    state.currentPlayerIndex = state.currentOpponentId
+    state.activeOverlay = 'player-turn'
+}
+
+function newTurn () {
+    state.activeOverlay = null
+    if (state.currentPlayer.skipTurn) {
+        skipTurn()
+    } else {
+        startTurn()
+    }
+}
+
+function skipTurn () {
+    state.currentPlayer.skippedTurn = true
+    state.currentPlayer.skipTurn = false
+}
+
+function startTurn () {
+    state,currentPlayer.skippedTurn = false
+    // If both player already had a first turn 
+    if (state.turn > 2) {
+        // Draw a new card
+        setTimeout( () => {
+            state.currentPlayer.hand.push(drawCard())
+            state.canPlay = true
+        }, 800)
+    } else {
+        state.canPlay = true
+    }
+}
+
+function endGame () {
+    state.activeOverlay = 'game-over'
+}
+
+var overlayCloseHandlers = {
+    'player-turn' () {
+        if (state.turn > 1) {
+            state.activeOverlay = 'last-play'
+        } else {
+            newTurn()
+        }
+    },
+    'last-play' () {
+        newTurn()
+    },
+    'game-over' () {
+        // Reload the game
+        document.location.reload()
+    },
 }

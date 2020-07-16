@@ -7,6 +7,12 @@ var currentPlayingCard = null
 
 // The consolidated state of our app
 var state = {
+
+  drawPile: pile,
+  discardPile: {},
+
+  canPlay: false,
+
   // UI
   activeOverlay: null,
   
@@ -43,7 +49,7 @@ var state = {
     },
   ],
 
-  testHand: [],
+
 
   currentPlayerIndex: Math.round(Math.random()),
   get currentPlayer () {
@@ -56,5 +62,9 @@ var state = {
 
   get currentOpponent () {
       return state.players[state.currentOpponentId]
+  },
+
+  get currentHand () {
+    return state.currentPlayer.hand
   },
 }
